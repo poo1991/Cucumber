@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
+
+import org.apache.commons.configuration.PropertiesConfiguration.PropertiesReader;
 
 public class Settings {
 	static BufferedReader reader ;
@@ -17,20 +20,18 @@ public class Settings {
 	public static Properties loadFromPropertiesFile() {
 		Properties props = new Properties();
 		BufferedReader reader;
-		try {
-			reader= new BufferedReader(new FileReader("configuration/global-settings.properties"));
+		InputStream is =null;
+		String configFileName="config.properties";
+		is = PropertiesReader.class.getClassLoader().getResourceAsStream(configFileName);
+		//reader= new BufferedReader(new FileReader("config.properties"));
 
-			try {
-				props.load(reader);
-				reader.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
+		try {
+			props.load(is);
+			is.close();
+			//reader.close();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new RuntimeException("global settis file is not gound in the mentioned location");
 		}
 		return props;
 	}
