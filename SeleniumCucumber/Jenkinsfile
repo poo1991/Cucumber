@@ -1,0 +1,41 @@
+pipeline {
+	agent{
+		label 'docker'
+	}
+	
+	stages {
+		stage('Test') {
+			agent {
+				docker {
+					reuseNode true
+					image 'nexus imgae'
+					args '-v /home/jenkins/.m2 : /domain/m2'
+				}
+			}
+			environment {
+				MAVEN_OPTS ="-Dmaven.repo.local=/domain/m2"
+			}
+			steps{
+				sh "mvn --settings /domain/m2/settings.xml clean test -e -DApplicationUrl='${appUrl}' -Dcucumber.filter.tags='${tags}'  -DthreadCount='${threadCount}' -DJenkinsRun='${JenkinsRun}' "
+			
+			}
+		}
+		
+	}
+	
+	post{
+		cleanup{
+			cleanWs()
+		}
+		always{
+			archiveArtifacts artifacts: 'target/**/*.*'
+			
+		  emailext mimeType: 'text/html',
+        body: '${FILE, path="target/cucumber-results-feature-overview.html"}',
+        subject: currentBuild.currentResult + " : " + env.JOB_NAME,
+        to: 'example@example.com'
+        from : 'Jenkins<emailid>'
+        }
+       }
+      }
+				

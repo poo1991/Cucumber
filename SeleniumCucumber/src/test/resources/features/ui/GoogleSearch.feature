@@ -25,4 +25,8 @@ Feature: Search
     When I enter "Facebook" in search text box
     And I click on Goole Search Button in Type Ahead Section
 
- 
+   @tag2 @API
+  Scenario: API Test
+    Given Call Get Single User API
+    Then Verify Response
+  
